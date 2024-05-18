@@ -3,6 +3,7 @@ import axios from "axios";
 import styles from "./styles.module.css";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { Container, Row, Col, Button } from "react-bootstrap";
 
 const CaseForm = ({ user }) => {
   const navigate = useNavigate();
@@ -92,106 +93,170 @@ const CaseForm = ({ user }) => {
     }
   };
 
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const jsonData = JSON.parse(e.target.result);
+          const url = "http://localhost:8080/api/cases";
+          const token = localStorage.getItem("token");
+          const headers = { "x-auth-token": token };
+          await axios.post(url, jsonData, { headers });
+          setCases([...cases, jsonData]);
+          toast.success("Case created successfully from JSON file");
+        } catch (error) {
+          toast.error("Failed to create case from JSON file");
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
   return (
-    <div className={styles.container}>
-      <h1 className={styles.heading}>
-        {editing ? "Edit Case" : "Create Case"}
-      </h1>
-      {user && // Add a conditional check to ensure user exists
-        user.role === 1 && (
-          <p className={styles.info}>
-            Admins can only view cases. Super Admins can edit and delete cases.
-          </p>
-        )}
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Case Id"
-          name="caseId"
-          onChange={handleChange}
-          value={data.caseId}
-          required
-          className={styles.input}
-        />
-        <input
-          type="datetime-local"
-          name="dateTimeOfIncident"
-          onChange={handleChange}
-          value={data.dateTimeOfIncident}
-          required
-          className={styles.input}
-        />
-        <input
-          type="text"
-          placeholder="Location"
-          name="location"
-          onChange={handleChange}
-          value={data.location}
-          required
-          className={styles.input}
-        />
-        <input
-          type="text"
-          placeholder="Victim Name"
-          name="victimName"
-          onChange={handleChange}
-          value={data.victimName}
-          required
-          className={styles.input}
-        />
-        <input
-          type="text"
-          placeholder="Suspect Name"
-          name="suspectName"
-          onChange={handleChange}
-          value={data.suspectName}
-          required
-          className={styles.input}
-        />
-        <textarea
-          placeholder="Description of Incident"
-          name="descriptionOfIncident"
-          onChange={handleChange}
-          value={data.descriptionOfIncident}
-          required
-          className={styles.textarea}
-        />
-        <input
-          type="text"
-          placeholder="Charges"
-          name="charges"
-          onChange={handleChange}
-          value={data.charges}
-          required
-          className={styles.input}
-        />
-        <input
-          type="text"
-          placeholder="Arrest Information"
-          name="arrestInformation"
-          onChange={handleChange}
-          value={data.arrestInformation}
-          required
-          className={styles.input}
-        />
-        <input
-          type="text"
-          placeholder="Evidence"
-          name="evidence"
-          onChange={handleChange}
-          value={data.evidence}
-          required
-          className={styles.input}
-        />
-        {error && <div className={styles.error}>{error}</div>}
-        {user && (user.role === 0 || user.role === 1) ? (
-          <button type="submit" className={styles.submit}>
-            {editing ? "Update Case" : "Create Case"}
-          </button>
-        ) : null}
-      </form>
+    <Container className={styles.container}>
+      <Row>
+      <Col md={6} className={styles.image_container}>
+      <div
+        className={styles.image}
+        style={{
+          backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Seal_of_Karnataka.svg/1200px-Seal_of_Karnataka.svg.png')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          borderRadius: '10px',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          height: '100%',
+        }}
+      />
+    </Col>
+
+        <Col md={6}>
+          <h1 className={styles.heading}>
+            {editing ? "Edit Case" : "Create Case"}
+          </h1>
+          {user && user.role === 1 && (
+            <p className={styles.info}>
+              Admins can only create and view cases. Super Admins can edit and delete cases.
+            </p>
+          )}
+          <div className={styles.button_container}>
+            <Button
+              href="https://crimelensapi.streamlit.app"
+              target="_blank"
+              variant="primary"
+              className={styles.link_button}
+              style={{ marginBottom: "10px", marginRight: "10px" }}
+            >
+              Go to Crime Lens
+            </Button>
+            <Button
+  variant="secondary"
+  className={styles.upload_button}
+  style={{ marginBottom: "10px" }}
+>
+  Upload JSON File
+  <input
+    type="file"
+    accept="application/json"
+    onChange={handleFileUpload}
+    style={{ display: "none" }}
+  />
+</Button>
+
+
+          </div>
+          <form className={styles.form} onSubmit={handleSubmit}>
+            <input
+              type="text"
+              placeholder="Case Id"
+              name="caseId"
+              onChange={handleChange}
+              value={data.caseId}
+              required
+              className={styles.input}
+            />
+            <input
+              type="datetime-local"
+              name="dateTimeOfIncident"
+              onChange={handleChange}
+              value={data.dateTimeOfIncident}
+              required
+              className={styles.input}
+            />
+            <input
+              type="text"
+              placeholder="Location"
+              name="location"
+              onChange={handleChange}
+              value={data.location}
+              required
+              className={styles.input}
+            />
+            <input
+              type="text"
+              placeholder="Victim Name"
+              name="victimName"
+              onChange={handleChange}
+              value={data.victimName}
+              required
+              className={styles.input}
+            />
+            <input
+              type="text"
+              placeholder="Suspect Name"
+              name="suspectName"
+              onChange={handleChange}
+              value={data.suspectName}
+              required
+              className={styles.input}
+            />
+            <textarea
+              placeholder="Description of Incident"
+              name="descriptionOfIncident"
+              onChange={handleChange}
+              value={data.descriptionOfIncident}
+              required
+              className={styles.textarea}
+            />
+            <input
+              type="text"
+              placeholder="Charges"
+              name="charges"
+              onChange={handleChange}
+              value={data.charges}
+              required
+              className={styles.input}
+            />
+            <input
+              type="text"
+              placeholder="Arrest Information"
+              name="arrestInformation"
+              onChange={handleChange}
+              value={data.arrestInformation}
+              required
+              className={styles.input}
+            />
+            <input
+              type="text"
+              placeholder="Evidence"
+              name="evidence"
+              onChange={handleChange}
+              value={data.evidence}
+              required
+              className={styles.input}
+            />
+            {error && <div className={styles.error}>{error}</div>}
+            {user && (user.role === 0 || user.role === 1) ? (
+              <button type="submit" className={styles.submit}>
+                {editing ? "Update Case" : "Create Case"}
+              </button>
+            ) : null}
+          </form>
+        </Col>
+      </Row>
       <ToastContainer />
-    </div>
+    </Container>
   );
 };
 

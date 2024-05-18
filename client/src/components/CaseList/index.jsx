@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import "./styles.css";
+import "react-toastify/dist/ReactToastify.css";
 
 const CaseTable = ({ user }) => {
   const navigate = useNavigate();
@@ -40,101 +40,41 @@ const CaseTable = ({ user }) => {
 
   return (
     <div className="container mt-5">
-      <h2 className="mb-4">Cases</h2>
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th>Case ID</th>
-            <th>Date & Time of Incident</th>
-            <th>Location</th>
-            <th>Victim Name</th>
-            <th>Suspect Name</th>
-            <th>Description of Incident</th>
-            <th>Charges</th>
-            <th>Arrest Information</th>
-            <th>Evidence</th>
-          </tr>
-        </thead>
-        <tbody>
-          {cases.map((caseItem) => (
-            <tr key={caseItem.caseId}>
-              <td>
-                <div
-                  className="scrollable-cell"
-                  style={{ width: "100px", height: "50px" }}
-                >
-                  {caseItem.caseId}
-                </div>
-              </td>
-              <td>
-                <div
-                  className="scrollable-cell"
-                  style={{ width: "175px", height: "50px" }}
-                >
-                  {new Date(caseItem.dateTimeOfIncident).toLocaleString()}
-                </div>
-              </td>
-              <td>
-                <div
-                  className="scrollable-cell"
-                  style={{ width: "150px", height: "50px" }}
-                >
-                  {caseItem.location}
-                </div>
-              </td>
-              <td>
-                <div
-                  className="scrollable-cell"
-                  style={{ width: "150px", height: "50px" }}
-                >
-                  {caseItem.victimName}
-                </div>
-              </td>
-              <td>
-                <div
-                  className="scrollable-cell"
-                  style={{ width: "150px", height: "50px" }}
-                >
-                  {caseItem.suspectName}
-                </div>
-              </td>
-              <td>
-                <div
-                  className="scrollable-cell"
-                  style={{ width: "200px", height: "50px" }}
-                >
-                  {caseItem.descriptionOfIncident}
-                </div>
-              </td>
-              <td>
-                <div
-                  className="scrollable-cell"
-                  style={{ width: "150px", height: "50px" }}
-                >
-                  {caseItem.charges}
-                </div>
-              </td>
-              <td>
-                <div
-                  className="scrollable-cell"
-                  style={{ width: "200px", height: "50px" }}
-                >
-                  {caseItem.arrestInformation}
-                </div>
-              </td>
-              <td>
-                <div
-                  className="scrollable-cell"
-                  style={{ width: "150px", height: "50px" }}
-                >
-                  {caseItem.evidence}
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
+      <h2 style={{ color: "#007bff", marginBottom: "20px" }}>Cases</h2>
+      {cases.map((caseItem) => (
+        <div key={caseItem.caseId} className="card mb-4">
+          <div className="card-body">
+            <h5 className="card-title">Case ID: {caseItem.caseId}</h5>
+            <p className="card-text">
+              <strong>Date & Time of Incident: </strong>{" "}
+              {new Date(caseItem.dateTimeOfIncident).toLocaleString()}
+            </p>
+            <p className="card-text">
+              <strong>Location: </strong> {caseItem.location}
+            </p>
+            <p className="card-text">
+              <strong>Victim Name: </strong> {caseItem.victimName}
+            </p>
+            <p className="card-text">
+              <strong>Suspect Name: </strong> {caseItem.suspectName}
+            </p>
+            <p className="card-text">
+              <strong>Description of Incident: </strong>{" "}
+              {caseItem.descriptionOfIncident}
+            </p>
+            <p className="card-text">
+              <strong>Charges: </strong> {caseItem.charges}
+            </p>
+            <p className="card-text">
+              <strong>Arrest Information: </strong>{" "}
+              {caseItem.arrestInformation}
+            </p>
+            <p className="card-text">
+              <strong>Evidence: </strong> {caseItem.evidence}
+            </p>
+          </div>
+        </div>
+      ))}
       <ToastContainer />
     </div>
   );
