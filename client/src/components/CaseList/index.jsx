@@ -8,14 +8,17 @@ const CaseTable = ({ user }) => {
   const navigate = useNavigate();
   const [cases, setCases] = useState([]);
 
+  // if user is null, go to /login
+
   useEffect(() => {
-    if (!user) {
+    if (!user && user == null) {
       toast.error("Please log in to view cases.");
       navigate("/");
       return;
     }
 
     const fetchCases = async () => {
+      console.log(user);
       const url =
         user.role === 1
           ? "http://localhost:8080/api/cases"
@@ -33,7 +36,7 @@ const CaseTable = ({ user }) => {
     };
 
     fetchCases();
-  }, [user.role]);
+  }, [user, navigate]);
 
   return (
     <div className="container mt-5">

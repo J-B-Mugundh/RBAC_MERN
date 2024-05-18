@@ -2,8 +2,18 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./styles.module.css";
 import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const CaseForm = ({ user }) => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!user && user === null) {
+      toast.error("Please log in to view cases.");
+      navigate("/");
+      return;
+    }
+  }, [user, navigate]);
+
   const [data, setData] = useState({
     caseId: "",
     dateTimeOfIncident: "",
@@ -87,11 +97,12 @@ const CaseForm = ({ user }) => {
       <h1 className={styles.heading}>
         {editing ? "Edit Case" : "Create Case"}
       </h1>
-      {user.role === 1 && (
-        <p className={styles.info}>
-          Admins can only view cases. Super Admins can edit and delete cases.
-        </p>
-      )}
+      {user && // Add a conditional check to ensure user exists
+        user.role === 1 && (
+          <p className={styles.info}>
+            Admins can only view cases. Super Admins can edit and delete cases.
+          </p>
+        )}
       <form className={styles.form} onSubmit={handleSubmit}>
         <input
           type="text"
@@ -173,7 +184,7 @@ const CaseForm = ({ user }) => {
           className={styles.input}
         />
         {error && <div className={styles.error}>{error}</div>}
-        {user.role === 0 || user.role === 1 ? (
+        {user && (user.role === 0 || user.role === 1) ? (
           <button type="submit" className={styles.submit}>
             {editing ? "Update Case" : "Create Case"}
           </button>

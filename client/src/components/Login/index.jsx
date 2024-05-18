@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import styles from "./styles.module.css";
+import { toast, ToastContainer } from "react-toastify";
 
 const Login = () => {
   const [data, setData] = useState({ email: "", password: "" });
@@ -69,6 +70,7 @@ const Login = () => {
           </Link>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

@@ -23,10 +23,11 @@ const ProfileCard = ({ userData }) => {
               <strong>Email:</strong> {userData.user.email}
             </p>
             <p className="card-text">
-              <strong>Phone:</strong> {userData.user.phone}
+              <strong>Designation:</strong>{" "}
+              {userData.user.role === 1 ? "General Police" : "Commissioner"}
             </p>
             <p className="card-text">
-              <strong>Address:</strong> {userData.user.address}
+              <strong>Role:</strong> {userData.user.role}
             </p>
           </div>
         </div>
