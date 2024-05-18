@@ -1,24 +1,40 @@
 const router = require("express").Router();
 const { User, validate } = require("../models/user");
-const bcrypt = require("bcrypt");
+router.get("/me", async (req, res) => {
+  const token = req.header("x-auth-token");
 
-router.post("/", async (req, res) => {
-	try {
-		const { error } = validate(req.body);
-		if (error) return res.status(400).send({ message: error.details[0].message });
+  if (!token) {
+    return res.status(401).json({ error: "Access denied. No token provided." });
+  }
 
-		const user = await User.findOne({ email: req.body.email });
-		if (user)
-			return res.status(409).send({ message: "User with given email already Exist!" });
+  try {
+    const decoded = jwt.verify(token, process.env.JWTPRIVATEKEY);
+    const user = await User.findById(decoded._id);
 
-		const salt = await bcrypt.genSalt(Number(process.env.SALT));
-		const hashPassword = await bcrypt.hash(req.body.password, salt);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
 
-		await new User({ ...req.body, password: hashPassword }).save();
-		res.status(201).send({ message: "User created successfully" });
-	} catch (error) {
-		res.status(500).send({ message: "Internal Server Error" });
-	}
+    res.status(200).json({ user });
+  } catch (err) {
+    res.status(400).json({ error: "Invalid token." });
+  }
+});
+
+router.get("/:userId", async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    res.status(200).json({ user });
+  } catch (err) {
+    res.status(500).json({ error: "Server error." });
+  }
 });
 
 module.exports = router;
