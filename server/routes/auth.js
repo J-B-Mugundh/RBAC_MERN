@@ -1,11 +1,11 @@
 const router = require("express").Router();
-const { User } = require("../models/user");
+const { User, validate } = require("../models/user");
 const bcrypt = require("bcrypt");
 const Joi = require("joi");
 
 router.post("/login", async (req, res) => {
   try {
-    const { error } = validate(req.body);
+    const { error } = validateLogin(req.body);
     if (error)
       return res.status(400).send({ message: error.details[0].message });
 
@@ -36,7 +36,9 @@ router.post("/login", async (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
+    console.log(req.body);
     const { error } = validate(req.body);
+    console.log(error);
     if (error)
       return res.status(400).send({ message: error.details[0].message });
 
@@ -56,7 +58,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-const validate = (data) => {
+const validateLogin = (data) => {
   const schema = Joi.object({
     email: Joi.string().email().required().label("Email"),
     password: Joi.string().required().label("Password"),
