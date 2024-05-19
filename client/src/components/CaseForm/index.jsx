@@ -15,8 +15,16 @@ const CaseForm = ({ user }) => {
     }
   }, [user, navigate]);
 
+  const getCurrentDateId = () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}${month}${day}`;
+  };
+
   const [data, setData] = useState({
-    caseId: "",
+    caseId: getCurrentDateId() + "-",
     dateTimeOfIncident: "",
     location: "",
     victimName: "",
@@ -39,7 +47,7 @@ const CaseForm = ({ user }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = "http://localhost:8080/api/cases";
+      const url = "https://privacyops-server.azurewebsites.net/api/cases";
       const token = localStorage.getItem("token");
       const headers = { "x-auth-token": token };
 
@@ -67,7 +75,11 @@ const CaseForm = ({ user }) => {
         evidence: "",
       });
     } catch (error) {
-      if (error.response && error.response.status >= 400 && error.response.status <= 500) {
+      if (
+        error.response &&
+        error.response.status >= 400 &&
+        error.response.status <= 500
+      ) {
         setError(error.response.data.message);
       }
     }
@@ -81,7 +93,7 @@ const CaseForm = ({ user }) => {
 
   const handleDelete = async (id) => {
     try {
-      const url = `http://localhost:8080/api/cases/${id}`;
+      const url = `https://privacyops-server.azurewebsites.net/api/cases/${id}`;
       const token = localStorage.getItem("token");
       await axios.delete(url, { headers: { "x-auth-token": token } });
       setCases(cases.filter((c) => c._id !== id));
@@ -116,11 +128,11 @@ const CaseForm = ({ user }) => {
             className={styles.image}
             style={{
               backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Seal_of_Karnataka.svg/1200px-Seal_of_Karnataka.svg.png')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              borderRadius: '10px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-              height: '100%',
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              borderRadius: "10px",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              height: "100%",
             }}
           />
         </Col>
@@ -132,7 +144,8 @@ const CaseForm = ({ user }) => {
           {user && user.role === 1 && (
             <div>
             <p className={styles.info}>
-              Admins can only create and view cases. Super Admins can edit and delete cases.
+              Admins can only create and view cases. Super Admins can edit and
+              delete cases.
             </p>
             <p className={styles.info}>
               Note: If Upload JSON is not working, please try manually. 
