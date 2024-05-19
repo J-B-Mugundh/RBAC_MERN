@@ -30,6 +30,8 @@ const CaseTable = ({ user }) => {
           headers: { "x-auth-token": token },
         });
         setCases(res);
+        console.log(cases);
+        console.log(res);
       } catch (error) {
         console.error("Error fetching cases:", error);
       }
@@ -66,8 +68,7 @@ const CaseTable = ({ user }) => {
               <strong>Charges: </strong> {caseItem.charges}
             </p>
             <p className="card-text">
-              <strong>Arrest Information: </strong>{" "}
-              {caseItem.arrestInformation}
+              <strong>Arrest Information: </strong> {caseItem.arrestInformation}
             </p>
             <p className="card-text">
               <strong>Evidence: </strong> {caseItem.evidence}

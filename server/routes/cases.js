@@ -4,6 +4,23 @@ const auth = require("../middleware/auth");
 const police = require("../middleware/police");
 const commissioner = require("../middleware/commissioner");
 
+router.get("/secure", [auth, commissioner], async (req, res) => {
+  try {
+    const cases = await Case.find();
+
+    for (const caseData of cases) {
+      await caseData.decryptFields();
+    }
+
+    res.status(200).send(cases);
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ error: "Error retrieving cases", details: err.message });
+  }
+});
+
 // Get all cases (masked) (Accessible by Police and Commisioner only)
 router.get("/", [auth, police], async (req, res) => {
   try {
@@ -96,22 +113,6 @@ router.delete("/:id", [auth, commissioner], async (req, res) => {
     res.status(200).send({ message: "Case deleted successfully" });
   } catch (error) {
     res.status(500).send({ message: "Internal Server Error" });
-  }
-});
-
-router.get("/secure", [auth, commissioner], async (req, res) => {
-  try {
-    const cases = await Case.find();
-
-    for (const caseData of cases) {
-      await caseData.decryptFields();
-    }
-
-    res.status(200).json({ cases });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ error: "Error retrieving cases", details: err.message });
   }
 });
 
