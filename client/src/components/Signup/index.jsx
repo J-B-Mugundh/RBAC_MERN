@@ -21,7 +21,8 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = "http://localhost:8080/api/auth/register";
+      const url =
+        "https://privacyops-server.azurewebsites.net/api/auth/register";
       const { data: res } = await axios.post(url, data);
       navigate("/login");
       console.log(res.message);
