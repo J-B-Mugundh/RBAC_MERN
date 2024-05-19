@@ -21,8 +21,8 @@ const CaseTable = ({ user }) => {
       console.log(user);
       const url =
         user.role === 1
-          ? "http://localhost:8080/api/cases"
-          : "http://localhost:8080/api/cases/secure";
+          ? "https://privacyops-server.azurewebsites.net/api/cases"
+          : "https://privacyops-server.azurewebsites.net/api/cases/secure";
       const token = localStorage.getItem("token");
 
       try {

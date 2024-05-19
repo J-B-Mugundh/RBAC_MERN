@@ -39,7 +39,7 @@ const CaseForm = ({ user }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = "http://localhost:8080/api/cases";
+      const url = "https://privacyops-server.azurewebsites.net/api/cases";
       const token = localStorage.getItem("token");
       const headers = { "x-auth-token": token };
 
@@ -67,7 +67,11 @@ const CaseForm = ({ user }) => {
         evidence: "",
       });
     } catch (error) {
-      if (error.response && error.response.status >= 400 && error.response.status <= 500) {
+      if (
+        error.response &&
+        error.response.status >= 400 &&
+        error.response.status <= 500
+      ) {
         setError(error.response.data.message);
       }
     }
@@ -81,7 +85,7 @@ const CaseForm = ({ user }) => {
 
   const handleDelete = async (id) => {
     try {
-      const url = `http://localhost:8080/api/cases/${id}`;
+      const url = `https://privacyops-server.azurewebsites.net/api/cases/${id}`;
       const token = localStorage.getItem("token");
       await axios.delete(url, { headers: { "x-auth-token": token } });
       setCases(cases.filter((c) => c._id !== id));
@@ -98,8 +102,8 @@ const CaseForm = ({ user }) => {
         try {
           const jsonData = JSON.parse(e.target.result);
           setData(jsonData); // Update the data state with the uploaded JSON data
-          console.log(jsonData)
-          const url = "http://localhost:8080/api/cases";
+          console.log(jsonData);
+          const url = "https://privacyops-server.azurewebsites.net/api/cases";
           const token = localStorage.getItem("token");
           const headers = { "x-auth-token": token };
           await axios.post(url, jsonData, { headers });
@@ -121,11 +125,11 @@ const CaseForm = ({ user }) => {
             className={styles.image}
             style={{
               backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Seal_of_Karnataka.svg/1200px-Seal_of_Karnataka.svg.png')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              borderRadius: '10px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-              height: '100%',
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              borderRadius: "10px",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              height: "100%",
             }}
           />
         </Col>
@@ -136,7 +140,8 @@ const CaseForm = ({ user }) => {
           </h1>
           {user && user.role === 1 && (
             <p className={styles.info}>
-              Admins can only create and view cases. Super Admins can edit and delete cases.
+              Admins can only create and view cases. Super Admins can edit and
+              delete cases.
             </p>
           )}
           <div className={styles.button_container}>

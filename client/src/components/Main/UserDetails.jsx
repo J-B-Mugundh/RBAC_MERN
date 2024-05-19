@@ -11,7 +11,7 @@ const UserDetails = ({ userId }) => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/users/${userId}`
+          `https://privacyops-server.azurewebsites.net/api/users/${userId}`
         );
         setUserData(response.data);
         setLoading(false);
