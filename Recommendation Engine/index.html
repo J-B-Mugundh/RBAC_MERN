@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendation Engine</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .alert {
+            padding: 20px;
+            background-color: #f44336; /* Red */
+            color: rgb(255, 255, 255);
+            margin-bottom: 15px;
+        }
+        .alert button {
+            margin-left: 15px;
+            border: none;
+            cursor: pointer;
+        }
+        .add-field {
+            margin-top: 20px;
+        }
+        .field-list {
+            margin-top: 20px;
+        }
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 1; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fields Recommended for Anonymization</h1>
+    <div id="alertContainer" class="alert">
+        <span id="fieldsToAnonymize">Loading...</span>
+        <button onclick="openModal()">Remove Field</button>
+    </div>
+    <div class="add-field">
+        <input type="text" id="newField" placeholder="Add new field">
+        <button onclick="addField()">Add Field</button>
+    </div>
+    <div class="field-list">
+        <h2>Current Fields:</h2>
+        <ul id="fieldList"></ul>
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Select Fields to Remove</h2>
+            <div id="checkboxList"></div>
+            <button onclick="applyChanges()">Apply Changes</button>
+        </div>
+    </div>
+
+    <script>
+        const url = 'http://127.0.0.1:5000/predict';  // Update with your actual URL
+        const data = {
+            "description": "John Doe was a victim of burglary at 100 Main St, Torento, USA, by suspect Jane Smith. The incident occurred on May 19, 2024, at 12:00 PM. Jane Smith was arrested on-site, supported by evidence including photos, fingerprints, and video footage."
+        };
+
+        function updateFieldList(fields) {
+            const fieldList = document.getElementById('fieldList');
+            fieldList.innerHTML = '';
+            fields.forEach(field => {
+                const li = document.createElement('li');
+                li.textContent = field;
+                fieldList.appendChild(li);
+            });
+        }
+
+        function addField() {
+            const newField = document.getElementById('newField').value;
+            if (newField) {
+                fieldsToAnonymize.push(newField);
+                updateFieldList(fieldsToAnonymize);
+                document.getElementById('newField').value = '';
+            }
+        }
+
+        function openModal() {
+            const modal = document.getElementById('myModal');
+            const checkboxList = document.getElementById('checkboxList');
+            checkboxList.innerHTML = '';
+
+            fieldsToAnonymize.forEach((field, index) => {
+                const div = document.createElement('div');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = true;
+                checkbox.id = 'fieldCheckbox' + index;
+                checkbox.value = field;
+
+                const label = document.createElement('label');
+                label.htmlFor = 'fieldCheckbox' + index;
+                label.textContent = field;
+
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                checkboxList.appendChild(div);
+            });
+
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('myModal');
+            modal.style.display = 'none';
+        }
+
+        function applyChanges() {
+            const checkboxes = document.querySelectorAll('#checkboxList input[type="checkbox"]');
+            fieldsToAnonymize = [];
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    fieldsToAnonymize.push(checkbox.value);
+                }
+            });
+            document.getElementById('fieldsToAnonymize').textContent = fieldsToAnonymize.join(', ');
+            updateFieldList(fieldsToAnonymize);
+            closeModal();
+        }
+
+        let fieldsToAnonymize = [];
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(data => {
+            fieldsToAnonymize = data;
+            document.getElementById('fieldsToAnonymize').textContent = fieldsToAnonymize.join(', ');
+            updateFieldList(fieldsToAnonymize);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            document.getElementById('fieldsToAnonymize').textContent = 'Error loading fields';
+        });
+
+        // Close the modal if the user clicks outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('myModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
