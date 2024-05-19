@@ -94,24 +94,19 @@ const CaseForm = ({ user }) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = async (e) => {
+      reader.onload = (e) => {
         try {
           const jsonData = JSON.parse(e.target.result);
-          setData(jsonData); // Update the data state with the uploaded JSON data
-          console.log(jsonData)
-          const url = "http://localhost:8080/api/cases";
-          const token = localStorage.getItem("token");
-          const headers = { "x-auth-token": token };
-          await axios.post(url, jsonData, { headers });
-          setCases([...cases, jsonData]);
-          toast.success("Case created successfully from JSON file");
+          // Store the JSON data in the component state
+          setData(jsonData);
         } catch (error) {
-          toast.error("Failed to create case from JSON file");
+          toast.error("Error parsing JSON file");
         }
       };
       reader.readAsText(file);
     }
   };
+  
 
   return (
     <Container className={styles.container}>
@@ -135,9 +130,17 @@ const CaseForm = ({ user }) => {
             {editing ? "Edit Case" : "Create Case"}
           </h1>
           {user && user.role === 1 && (
+            <div>
             <p className={styles.info}>
               Admins can only create and view cases. Super Admins can edit and delete cases.
             </p>
+            <p className={styles.info}>
+              Note: If Upload JSON is not working, please try manually. 
+              Sometimes, it may not work as expected.
+            </p>
+            </div>
+            
+            
           )}
           <div className={styles.button_container}>
             <Button
