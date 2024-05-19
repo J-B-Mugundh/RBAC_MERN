@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import styles from "./styles.module.css";
 import { toast, ToastContainer } from "react-toastify";
@@ -8,7 +8,7 @@ import { Container, Row, Col, Button } from "react-bootstrap";
 const CaseForm = ({ user }) => {
   const navigate = useNavigate();
   useEffect(() => {
-    if (!user && user === null) {
+    if (!user) {
       toast.error("Please log in to view cases.");
       navigate("/");
       return;
@@ -30,6 +30,7 @@ const CaseForm = ({ user }) => {
   const [error, setError] = useState("");
   const [editing, setEditing] = useState(false);
   const [currentCaseId, setCurrentCaseId] = useState("");
+  const fileInputRef = useRef(null);
 
   const handleChange = ({ currentTarget: input }) => {
     setData({ ...data, [input.name]: input.value });
@@ -49,8 +50,8 @@ const CaseForm = ({ user }) => {
         );
         toast.success("Case updated successfully");
       } else {
-        await axios.post(url, data, { headers });
-        setCases([...cases, data]);
+        const response = await axios.post(url, data, { headers });
+        setCases([...cases, response.data]);
         toast.success("Case created successfully");
       }
       setEditing(false);
@@ -66,11 +67,7 @@ const CaseForm = ({ user }) => {
         evidence: "",
       });
     } catch (error) {
-      if (
-        error.response &&
-        error.response.status >= 400 &&
-        error.response.status <= 500
-      ) {
+      if (error.response && error.response.status >= 400 && error.response.status <= 500) {
         setError(error.response.data.message);
       }
     }
@@ -100,6 +97,8 @@ const CaseForm = ({ user }) => {
       reader.onload = async (e) => {
         try {
           const jsonData = JSON.parse(e.target.result);
+          setData(jsonData); // Update the data state with the uploaded JSON data
+          console.log(jsonData)
           const url = "http://localhost:8080/api/cases";
           const token = localStorage.getItem("token");
           const headers = { "x-auth-token": token };
@@ -117,19 +116,19 @@ const CaseForm = ({ user }) => {
   return (
     <Container className={styles.container}>
       <Row>
-      <Col md={6} className={styles.image_container}>
-      <div
-        className={styles.image}
-        style={{
-          backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Seal_of_Karnataka.svg/1200px-Seal_of_Karnataka.svg.png')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          borderRadius: '10px',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-          height: '100%',
-        }}
-      />
-    </Col>
+        <Col md={6} className={styles.image_container}>
+          <div
+            className={styles.image}
+            style={{
+              backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Seal_of_Karnataka.svg/1200px-Seal_of_Karnataka.svg.png')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              borderRadius: '10px',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+              height: '100%',
+            }}
+          />
+        </Col>
 
         <Col md={6}>
           <h1 className={styles.heading}>
@@ -151,20 +150,20 @@ const CaseForm = ({ user }) => {
               Go to Crime Lens
             </Button>
             <Button
-  variant="secondary"
-  className={styles.upload_button}
-  style={{ marginBottom: "10px" }}
->
-  Upload JSON File
-  <input
-    type="file"
-    accept="application/json"
-    onChange={handleFileUpload}
-    style={{ display: "none" }}
-  />
-</Button>
-
-
+              variant="secondary"
+              className={styles.upload_button}
+              style={{ marginBottom: "10px" }}
+              onClick={() => fileInputRef.current.click()}
+            >
+              Upload JSON File
+            </Button>
+            <input
+              type="file"
+              accept="application/json"
+              onChange={handleFileUpload}
+              ref={fileInputRef}
+              style={{ display: "none" }}
+            />
           </div>
           <form className={styles.form} onSubmit={handleSubmit}>
             <input
